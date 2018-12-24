@@ -1,7 +1,17 @@
 import face_recognition
 import cv2
 import time
+import sqlite3
 
+
+conn = sqlite3.connect('new2.db')
+cur = conn.cursor()
+
+k=0
+nol = 0
+odin = 1
+dva = 2
+tri = 3
 video_capture = cv2.VideoCapture(0)
 
 
@@ -19,10 +29,36 @@ def main():
         # Конвертация изображения из BGR color (which OpenCV uses) в RGB color (с которым работает библиотека)
         rgb_small_frame = small_frame[:, :, ::-1]
         face_locations = face_recognition.face_locations(rgb_small_frame)
-        if face_locations.__len__() == 1:
-            cv2.imwrite('new.png',rgb_small_frame)
-            print('foto sdelano')
-            time.sleep(3)
+        if face_locations.__len__() >= 1:
+            print('обнаружил лица')
+            fuck_encode = face_recognition.face_encodings(rgb_small_frame)
+            k = 0
+            for face_encoda in fuck_encode:
+                print('начинаю добавлять фото в бд')
+                text_encoda = str(face_encoda.tolist())
+                # cur.execute('''insert into encodings values (?)''', (text_encoda))
+                print(type(text_encoda))
+                if k == 3:
+                    cur.execute('''update encodings set encode = (?) where number = (?)''', (text_encoda,tri,))
+                    k=+1
+                if k == 2:
+                    cur.execute('''update encodings set encode = (?) where number = (?)''', (text_encoda,dva,))
+                    k=+1
+                if k == 1:
+                    cur.execute('''update encodings set encode = (?) where number = (?)''', (text_encoda,odin,))
+                    k=+1
+                if k == 0:
+                    cur.execute('''update encodings set encode = (?) where number = (?)''', (text_encoda,nol,))
+                    k=+1
+                conn.commit()
+                time.sleep(0.5)
+                print('фото добавлено')
+                if k >= 3:
+                    k = 0
+                    break
+            k=0
+
+
 
 if __name__ == "__main__":
     main()
