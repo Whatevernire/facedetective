@@ -2,6 +2,7 @@ import sqlite3
 import numpy as np
 import face_recognition
 import time
+import cv2
 # Подключаемся к базе и создаем курсор
 conn = sqlite3.connect('new2.db')
 cur = conn.cursor()
@@ -10,6 +11,8 @@ cur = conn.cursor()
 baza_lic = []
 imena = []
 baza_lic_res = []
+c4et4ik = True
+
 # Выгружаем все имена из базы данных
 
 cur.execute('''select count(names) from face''')
@@ -45,12 +48,32 @@ for i in range(len_imena):
 # Сравниваем наше лицо с лицами из базы в цикле, зависящем от количества имен
 while True:
     # Получаем изображение для распознания
-
+    start_time = time.time()
     known_image = face_recognition.load_image_file("new.png")
+    known_image = cv2.resize(known_image,(0 , 0), fx=0.45, fy = 0.45)
+    # fuck_location = face_recognition.face_locations(known_image)
     fuck_encode = face_recognition.face_encodings(known_image)
+    # print (fuck_encode)
+    face_imena = []
+    # for i in range(len_imena):
+    #     result = face_recognition.compare_faces(fuck_encode, baza_lic[i])
+    #     if result == [True]:
+    #         print(imena[i])
+    #         print(result)
+    #         print('''--- %seconds ----''' % (time.time()-start_time))
+    for face_encoda in fuck_encode:
+        face_recognition_try = face_recognition.compare_faces(baza_lic, face_encoda)
+        imya_output = 'Unknown'
 
-    for i in range(len_imena):
-        result = face_recognition.compare_faces(fuck_encode, baza_lic[i])
-        if result == [True]:
-            print(imena[i])
-        time.sleep(3)
+        if True in face_recognition_try:
+            index_lica = face_recognition_try.index(True)
+            name = imena[index_lica]
+            print(name)
+            print('''--- %seconds ----''' % (time.time() - start_time))
+        else: print(imya_output)
+
+    # time.sleep(1)
+
+
+
+

@@ -7,20 +7,22 @@ video_capture = cv2.VideoCapture(0)
 
 face_locations = []
 
-while True:
+def main():
+    while True:
 
-    # Взятие кадра с видео
-    ret, frame = video_capture.read()
+        # Взятие кадра с видео
+        ret, frame = video_capture.read()
 
-    # Уменьшение кадра до 1/4 для быстрого распознования лица
-    small_frame = cv2.resize(frame, (0, 0), fx=1, fy=1)
+        # Уменьшение кадра до 1/4 для быстрого распознования лица
+        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-    # Конвертация изображения из BGR color (which OpenCV uses) в RGB color (с которым работает библиотека)
-    rgb_small_frame = small_frame[:, :, ::-1]
-    face_locations = face_recognition.face_locations(rgb_small_frame)
-    if face_locations.__len__() == 1:
-        cv2.imwrite('new.png',rgb_small_frame)
-        print('foto sdelano')
-        time.sleep(3)
+        # Конвертация изображения из BGR color (which OpenCV uses) в RGB color (с которым работает библиотека)
+        rgb_small_frame = small_frame[:, :, ::-1]
+        face_locations = face_recognition.face_locations(rgb_small_frame)
+        if face_locations.__len__() == 1:
+            cv2.imwrite('new.png',rgb_small_frame)
+            print('foto sdelano')
+            time.sleep(3)
 
-
+if __name__ == "__main__":
+    main()
